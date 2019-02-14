@@ -36,6 +36,6 @@ DELETE PROCEDURE h-cep.
 
 ### Pré-requisitos
 
-Progress 11.7 e possuir a biblioteca C:\dlc116\gui\netlib\OpenEdge.Net.pl no propath:
+Progress 11.7 e possuir a biblioteca %DLC%\gui\netlib\OpenEdge.Net.pl no propath:
 https://documentation.progress.com/output/ua/OpenEdge_latest/index.html#page/dvpin%2Fmaking-http(s)-requests-from-abl-applications.html%23
 
