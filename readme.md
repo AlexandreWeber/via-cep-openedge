@@ -7,12 +7,14 @@ Programa progress para consumo da api de CEP viaCep https://viacep.com.br/
 O programa deve ser executado de forma persistente e então usar as procedures abaixo:
 
 buscarPeloCep (input "cep", 
-               output table ttCep)
+               output table ttCep,
+               output table ttCEPErros)
 
 buscarPeloEndereco (input "uf", 
                     input "p-cidade", 
                     input "p-logradouro",
-                    output table ttCep)
+                    output table ttCep,
+                    output table ttCEPErros)
 
 
 ```
