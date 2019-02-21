@@ -32,8 +32,13 @@ DEFINE TEMP-TABLE ttCEP NO-UNDO
     FIELD ibge          AS CHARACTER
     FIELD gia           AS CHARACTER.
 
+DEFINE TEMP-TABLE ttCEPErros NO-UNDO
+    FIELD num-erro  AS INTEGER
+    FIELD desc-erro AS CHARACTER.    
+
 RUN buscarPeloCep IN h-cep (INPUT "89201299", 
-                            OUTPUT TABLE ttCEP).
+                            OUTPUT TABLE ttCEP,
+                            OUTPUT TABLE ttCepErros).
 
 DELETE PROCEDURE h-cep.
 ```
