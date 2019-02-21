@@ -36,6 +36,20 @@ PROCEDURE buscarPeloEndereco:
 
     ASSIGN c-url = BASE_URL + p-uf + "/" + p-cidade + "/" + p-logradouro + "/json/".
 
+    IF LENGTH(TRIM(p-uf)) = 0 OR LENGTH(TRIM(p-cidade)) = 0 OR LENGTH(TRIM(p-logradouro)) = 0 THEN DO:
+        CREATE ttCepErros.
+        ASSIGN ttCepErros.desc-erro = "Informe um estado, cidade, e logradouro v lidos!".
+
+        RETURN "NOK".
+    END.
+
+    IF LENGTH(TRIM(p-logradouro)) < 3 THEN DO:
+        CREATE ttCepErros.
+        ASSIGN ttCepErros.desc-erro = "O logradouro deve possuir no m¡nimo 3 caracteres!".
+
+        RETURN "NOK".
+    END.
+
     DO ON ERROR UNDO, LEAVE:
 
         oHttpClient = ClientBuilder:Build():UsingLibrary(ClientLibraryBuilder:Build():sslVerifyHost(NO):LIBRARY):Client.
@@ -52,6 +66,10 @@ PROCEDURE buscarPeloEndereco:
                    ttCep.unidade     = IF oEntityArray:getJsonObject(i):HAS("unidade")     THEN oEntityArray:getJsonObject(i):getCharacter("unidade")       ELSE ""
                    ttCep.ibge        = IF oEntityArray:getJsonObject(i):HAS("ibge")        THEN oEntityArray:getJsonObject(i):getCharacter("ibge")          ELSE ""
                    ttCep.gia         = IF oEntityArray:getJsonObject(i):HAS("gia")         THEN oEntityArray:getJsonObject(i):getCharacter("gia")           ELSE "".
+        END.
+        IF oEntityArray:LENGTH = 0 THEN DO:
+            CREATE ttCEPErros.
+            ASSIGN ttCEPErros.desc-erro = "Nenhum CEP encontrado!".
         END.
 
         CATCH errorOne AS PROGRESS.Lang.AppError:
@@ -73,9 +91,25 @@ PROCEDURE buscarPeloCep:
     DEFINE VARIABLE oHttpClient AS OpenEdge.Net.HTTP.IHttpClient         NO-UNDO.
     DEFINE VARIABLE c-url       AS CHARACTER                             NO-UNDO.
     DEFINE VARIABLE oEntity     AS JsonObject                            NO-UNDO.
+    DEFINE VARIABLE i-cep       AS INTEGER     NO-UNDO.
 
     ASSIGN c-url = BASE_URL + p-cep + "/json/".
+
+    ASSIGN i-cep = INTEGER(p-cep) NO-ERROR.
+    IF ERROR-STATUS:ERROR THEN DO:
+        CREATE ttCepErros.
+        ASSIGN ttCepErros.desc-erro = "O CEP deve possuir somente n£meros!".
     
+        RETURN "NOK".
+    END.
+
+    IF LENGTH(TRIM(p-cep)) <> 8 THEN DO:
+        CREATE ttCepErros.
+        ASSIGN ttCepErros.desc-erro = "O CEP deve possuir 8 caracters!".
+
+        RETURN "NOK".
+    END.
+
     DO ON ERROR UNDO, LEAVE:
 
         oHttpClient = ClientBuilder:Build():UsingLibrary(ClientLibraryBuilder:Build():sslVerifyHost(NO):LIBRARY):Client.
@@ -92,6 +126,10 @@ PROCEDURE buscarPeloCep:
                    ttCep.unidade     = IF oEntity:HAS("unidade")     THEN oEntity:getCharacter("unidade")       ELSE ""
                    ttCep.ibge        = IF oEntity:HAS("ibge")        THEN oEntity:getCharacter("ibge")          ELSE ""
                    ttCep.gia         = IF oEntity:HAS("gia")         THEN oEntity:getCharacter("gia")           ELSE "".
+        END.
+        ELSE IF oEntity:has("erro") THEN DO:
+            CREATE ttCEPErros.
+            ASSIGN ttCEPErros.desc-erro = "CEP NÆo encontrado!".
         END.
 
         CATCH errorOne AS PROGRESS.Lang.AppError:

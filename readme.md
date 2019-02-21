@@ -8,13 +8,13 @@ O programa deve ser executado de forma persistente e então usar as procedures a
 
 buscarPeloCep (input "cep", 
                output table ttCep,
-               output table ttCEPErros)
+               output table ttCEPErros).
 
 buscarPeloEndereco (input "uf", 
                     input "p-cidade", 
                     input "p-logradouro",
                     output table ttCep,
-                    output table ttCEPErros)
+                    output table ttCEPErros).
 
 
 ```
